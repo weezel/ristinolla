@@ -1,9 +1,10 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
-#define	SIVU 50
+#define	SIVU 10
 #define M1 'X'
 #define M2 'O' /* iso o, jos nyt unohdat */
 
@@ -12,8 +13,11 @@ struct point {
 	size_t	y;
 };
 
-int laillinen_siirto(struct point *);
+int laillinen_siirto(char **, struct point *);
+struct point satunnainen_paikka(char **, char);
+void tulosta_areena(char **);
 char **luo_areena(void);
+void free_areena(char **);
 __dead void usage(void);
 
 
@@ -23,6 +27,8 @@ main(int argc, const char *argv[])
 	char	**areena = NULL;
 	char	 *file = NULL;
 	int	  bflag, ch;
+	struct point p;
+	size_t i = 0;
 
 	bflag = 0;
 
@@ -30,6 +36,7 @@ main(int argc, const char *argv[])
 		usage();
 
 	areena = luo_areena();
+	memset(&p, 0, sizeof(struct point));
 
 	while ((ch = getopt(argc, (char *const *)argv, "bf:")) != -1) {
 		switch ((char)ch) {
@@ -46,18 +53,40 @@ main(int argc, const char *argv[])
 	argc -= optind;
 	argv += optind;
 
-	fprintf(stdout, "%s\n", file);
+	for (i = 0; i < 20; i++)
+		p = satunnainen_paikka(areena, M1);
+	for (i = 0; i < 20; i++)
+		p = satunnainen_paikka(areena, M2);
+
+	tulosta_areena(areena);
+
+	free_areena(areena);
 
 	return 0;
 }
 
 /* Palauta 1 mikäli siirto on laillinen */
 int
-laillinen_siirto(struct point *p)
+laillinen_siirto(char **t, struct point *p)
 {
-	if (p->x < SIVU && p->y < SIVU) /* size_t:n takia x tai y ei voi olla < 0 */
+	if (p->x < SIVU && p->y < SIVU && /* size_t:n takia x tai y ei voi olla < 0 */
+			t[p->x][p->y] == ' ')
 		return 1;
 	return 0;
+}
+
+struct point
+satunnainen_paikka(char **t, char c)
+{
+	struct point	p;
+
+	do {
+		p.x = arc4random() % SIVU;
+		p.y = arc4random() % SIVU;
+	} while (laillinen_siirto(t, &p) == 0);
+	t[p.x][p.y] = c;
+
+	return p;
 }
 
 char **
@@ -65,19 +94,56 @@ luo_areena()
 {
 	char	**t = NULL;
 	size_t	  i = 0;
+	size_t	  j = 0;
 
 	t = calloc(SIVU, sizeof(char *));
 	if (t == NULL) {
 		err(1, "calloc epäonnistui");
 	}
 
-	for (i=0; i < SIVU; i++) {
+	for (i = 0; i < SIVU; i++) {
 		t[i] = calloc(SIVU, sizeof(char));
-		if (t[i] == NULL) {
+		if (t[i] == NULL)
 			err(1,"calloc epäonnistui");
-		}
+
+		for (j = 0; j < SIVU; j++)
+			t[i][j] = ' ';
 	}
 	return t;
+}
+
+void
+free_areena(char **t)
+{
+	int i;
+
+	for (i = 0; i < SIVU; i++) {
+		free(t[i]);
+		t[i] = NULL;
+	}
+	free(t);
+	t = NULL;
+}
+
+void
+tulosta_areena(char **t)
+{
+	ssize_t	i, j;
+
+	for (i = -1; i < SIVU; i++) {
+		for (j = -1; j < SIVU; j++) {
+			if (i == -1 || j == -1 || i + 1 == SIVU || j + 1 == SIVU)
+				fprintf(stdout, "%c", ':');
+			else
+				fprintf(stdout, "%c", t[i][j]);
+		}
+		fprintf(stdout, "\n");
+	}
+}
+
+void
+lue_tiedosto_areenaksi(int fd)
+{
 }
 
 void
