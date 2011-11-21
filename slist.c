@@ -7,7 +7,7 @@
 
 /* return 1 if empty, else 0 */
 int
-isempty(struct slist *sl)
+slist_isempty(struct slist *sl)
 {
 	if (slist_size > 0)
 		return 0;
@@ -15,7 +15,7 @@ isempty(struct slist *sl)
 }
 
 struct slist *
-_initialize_node(struct point *p)
+slist_initialize_node(struct point *p)
 {
 	struct slist	*node = NULL;
 
@@ -32,17 +32,17 @@ void
 slist_clear(struct slist *sl)
 {
 	while (slist_head != NULL)
-		removebeginning(slist_head);
+		slist_removebeginning(slist_head);
 }
 
 void
-insertbeginning(struct slist *sl, struct point *p)
+slist_insertbeginning(struct slist *sl, struct point *p)
 {
 	struct slist	*node = NULL;
 
-	node = _initialize_node(p);
+	node = slist_initialize_node(p);
 
-	if (isempty(sl) == 1) {
+	if (slist_isempty(sl) == 1) {
 		slist_head = node;
 		slist_head->next = NULL;
 		slist_size = 1;
@@ -54,11 +54,11 @@ insertbeginning(struct slist *sl, struct point *p)
 }
 
 void
-removebeginning(struct slist *sl)
+slist_removebeginning(struct slist *sl)
 {
 	struct slist	*newhead = NULL;
 
-	if (isempty(sl) == 1)
+	if (slist_isempty(sl) == 1)
 		return;
 
 	newhead = slist_head->next;
@@ -73,7 +73,7 @@ removebeginning(struct slist *sl)
 }
 
 void
-print_slist()
+slist_print()
 {
 	struct slist	*node;
 
@@ -91,7 +91,7 @@ print_slist()
 }
 
 void
-test_slist(void)
+_slist_test(void)
 {
 	struct slist	*sl;
 	struct point	*p;
@@ -108,32 +108,32 @@ test_slist(void)
 	p2->y = 2;
 
 	printf("EMPTY LIST\n");
-	print_slist();
+	slist_print();
 	printf("\n");
 
 	printf("ONE ELEMENT\n");
-	insertbeginning(sl, p);
-	print_slist();
+	slist_insertbeginning(sl, p);
+	slist_print();
 	printf("\n");
 
 	printf("TWO ELEMENTS\n");
-	insertbeginning(sl, p2);
-	print_slist();
+	slist_insertbeginning(sl, p2);
+	slist_print();
 	printf("\n");
 
 	printf("REMOVE LAST ELEMENT\n");
-	removebeginning(sl);
-	print_slist();
+	slist_removebeginning(sl);
+	slist_print();
 	printf("\n");
 
 	printf("REMOVE LAST ELEMENT #2\n");
-	removebeginning(sl);
-	print_slist();
+	slist_removebeginning(sl);
+	slist_print();
 	printf("\n");
 
 	printf("TRY TO REMOVE FROM AN EMPTY LIST\n");
-	removebeginning(sl);
-	print_slist();
+	slist_removebeginning(sl);
+	slist_print();
 	printf("\n");
 
 	printf("NEW MALLOC\n");
@@ -145,14 +145,14 @@ test_slist(void)
 	p->y = 1;
 	p2->x = 9;
 	p2->y = 9;
-	insertbeginning(sl, p);
-	insertbeginning(sl, p2);
-	print_slist();
+	slist_insertbeginning(sl, p);
+	slist_insertbeginning(sl, p2);
+	slist_print();
 	printf("\n");
 
 	printf("CLEAR ALL\n");
 	slist_clear(sl);
-	print_slist();
+	slist_print();
 	printf("\n");
 
 	sl = NULL;

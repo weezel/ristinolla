@@ -15,12 +15,12 @@ struct slist {
 static size_t slist_size;
 static struct slist *slist_head;
 
-int isempty(struct slist *);
-struct slist *initialize_node(struct point *);
+int slist_isempty(struct slist *);
+struct slist *slist_initialize_node(struct point *);
 void slist_clear(struct slist *);
-void insertbeginning(struct slist *, struct point *);
-void removebeginning(struct slist *);
-void print_slist();
-void test_slist(void);
+void slist_insertbeginning(struct slist *, struct point *);
+void slist_removebeginning(struct slist *);
+void slist_print();
+void _slist_test(void);
 
 #endif /* _SLIST_H_ */
