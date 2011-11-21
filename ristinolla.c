@@ -1,17 +1,17 @@
+#include <sys/queue.h>
+
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
+#include "slist.h"
+
 #define	SIVU 10
 #define M1 'X'
 #define M2 'O' /* iso o, jos nyt unohdat */
 
-struct point {
-	size_t	x;
-	size_t	y;
-};
 
 int laillinen_siirto(char **, struct point *);
 struct point satunnainen_paikka(char **, char);
@@ -26,11 +26,12 @@ main(int argc, const char *argv[])
 {
 	char	**areena = NULL;
 	char	 *file = NULL;
-	int	  bflag, ch;
+	int	  cflag, ch;
 	struct point p;
 	size_t i = 0;
+	struct point pp[40];
 
-	bflag = 0;
+	cflag = 0;
 
 	if (argc < 2)
 		usage();
@@ -38,10 +39,10 @@ main(int argc, const char *argv[])
 	areena = luo_areena();
 	memset(&p, 0, sizeof(struct point));
 
-	while ((ch = getopt(argc, (char *const *)argv, "bf:")) != -1) {
+	while ((ch = getopt(argc, (char *const *)argv, "cf:")) != -1) {
 		switch ((char)ch) {
-		case 'b':
-			bflag = 1;
+		case 'c':
+			cflag = 1;
 			break;
 		case 'f':
 			file = optarg;
@@ -53,12 +54,24 @@ main(int argc, const char *argv[])
 	argc -= optind;
 	argv += optind;
 
-	for (i = 0; i < 20; i++)
+	for (i = 0; i < 20; i++) {
 		p = satunnainen_paikka(areena, M1);
-	for (i = 0; i < 20; i++)
+		pp[i] = p;
+	}
+	for (i = 20; i < 40; i++) {
 		p = satunnainen_paikka(areena, M2);
+		pp[i] = p;
+	}
 
 	tulosta_areena(areena);
+	for (i = 0; i < 40; i++) {
+		if (pp[i].merkki == M1) {
+			if (i > 0 && (pp[i - 1].x == pp[i].x ||
+					pp[i - 1].y == pp[i].y)) {
+				fprintf(stdout, "%zu[%c]: %zu, %zu\n", i, pp[i - 1].merkki, pp[i - 1].x, pp[i - 1].y);
+			}
+		}
+	}
 
 	free_areena(areena);
 
@@ -85,6 +98,15 @@ satunnainen_paikka(char **t, char c)
 		p.y = arc4random() % SIVU;
 	} while (laillinen_siirto(t, &p) == 0);
 	t[p.x][p.y] = c;
+
+	switch (c) {
+	case M1:
+		p.merkki = M1;
+		break;
+	case M2:
+		p.merkki = M2;
+		break;
+	}
 
 	return p;
 }
@@ -151,7 +173,7 @@ usage(void)
 {
 	extern char *__progname;
 
-	(void)fprintf(stderr, "usage: %s [-b] [-f file]\n", __progname);
+	(void)fprintf(stderr, "usage: %s [-c] [-f file]\n", __progname);
 	exit(1);
 }
 
