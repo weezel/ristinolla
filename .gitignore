@@ -2,3 +2,4 @@ ristinolla
 slist
 *.swp
 *.core
+*.o

@@ -28,8 +28,8 @@ main(int argc, const char *argv[])
 	char	 *file = NULL;
 	int	  cflag, ch;
 	struct point p;
+	struct slist *sl = NULL;
 	size_t i = 0;
-	struct point pp[40];
 
 	cflag = 0;
 
@@ -55,23 +55,18 @@ main(int argc, const char *argv[])
 	argv += optind;
 
 	for (i = 0; i < 20; i++) {
-		p = satunnainen_paikka(areena, M1);
-		pp[i] = p;
-	}
-	for (i = 20; i < 40; i++) {
-		p = satunnainen_paikka(areena, M2);
-		pp[i] = p;
+		if (i % 2 == 0) {
+			p = satunnainen_paikka(areena, M1);
+			slist_insertbeginning(sl, &p);
+		}
+		else {
+			p = satunnainen_paikka(areena, M2);
+			slist_insertbeginning(sl, &p);
+		}
 	}
 
 	tulosta_areena(areena);
-	for (i = 0; i < 40; i++) {
-		if (pp[i].merkki == M1) {
-			if (i > 0 && (pp[i - 1].x == pp[i].x ||
-					pp[i - 1].y == pp[i].y)) {
-				fprintf(stdout, "%zu[%c]: %zu, %zu\n", i, pp[i - 1].merkki, pp[i - 1].x, pp[i - 1].y);
-			}
-		}
-	}
+	slist_print(sl);
 
 	free_areena(areena);
 

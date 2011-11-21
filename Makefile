@@ -1,6 +1,8 @@
-CC=clang
+CC=clang -g
 
-all:
-	${CC} -g -ansi -pedantic -Wall -o ristinolla ristinolla.c
+all: slist
+	${CC} -ansi -pedantic -Wall -o ristinolla ristinolla.c slist.o
 slist:
-	${CC} -g -ansi -pedantic -Wall -o slist slist.c
+	${CC} -ansi -pedantic -Wall -c -o slist.o slist.c
+clean:
+	rm -f *.o *.core ristinolla slist

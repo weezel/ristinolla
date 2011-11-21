@@ -19,11 +19,15 @@ slist_initialize_node(struct point *p)
 {
 	struct slist	*node = NULL;
 
-	if ((node = malloc(sizeof(node))) == NULL)
+	if ((node = malloc(sizeof(struct slist))) == NULL)
 		err(1, "malloc");
 	memset(node, 0, sizeof(*node));
+
+	if ((node->point = malloc(sizeof(struct point))) == NULL)
+		err(2, "malloc");
+	memcpy(node->point, p, sizeof(struct point));
+
 	node->next = NULL;
-	node->point = p;
 
 	return node;
 }
@@ -84,8 +88,8 @@ slist_print()
 	}
 
 	do {
-		fprintf(stdout, "X: %zu, Y: %zu [size %zu]\n",
-			node->point->x, node->point->y, slist_size);
+		fprintf(stdout, "%c at (%zu, %zu) [size %zu]\n",
+			node->point->merkki, node->point->x, node->point->y, slist_size);
 		node = node->next;
 	} while (node != NULL) ;
 }
@@ -104,8 +108,10 @@ _slist_test(void)
 
 	p->x = 5;
 	p->y = 8;
+	p->merkki = '#';
 	p2->x = 1;
 	p2->y = 2;
+	p2->merkki = '#';
 
 	printf("EMPTY LIST\n");
 	slist_print();
@@ -143,8 +149,10 @@ _slist_test(void)
 		err(1, "död");
 	p->x = 1;
 	p->y = 1;
+	p->merkki = '#';
 	p2->x = 9;
 	p2->y = 9;
+	p2->merkki = '#';
 	slist_insertbeginning(sl, p);
 	slist_insertbeginning(sl, p2);
 	slist_print();
