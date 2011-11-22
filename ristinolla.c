@@ -24,11 +24,11 @@ __dead void usage(void);
 int
 main(int argc, const char *argv[])
 {
-	char	**areena = NULL;
-	char	 *file = NULL;
-	int	  cflag, ch;
-	struct point p;
-	struct slist *sl = NULL;
+	char		**areena = NULL;
+	char		 *file = NULL;
+	int		  cflag, ch;
+	struct point	  p;
+	struct slist	 *siirrot = NULL;
 	size_t i = 0;
 
 	cflag = 0;
@@ -57,16 +57,17 @@ main(int argc, const char *argv[])
 	for (i = 0; i < 20; i++) {
 		if (i % 2 == 0) {
 			p = satunnainen_paikka(areena, M1);
-			slist_insertbeginning(sl, &p);
+			slist_insertbeginning(siirrot, &p);
 		}
 		else {
 			p = satunnainen_paikka(areena, M2);
-			slist_insertbeginning(sl, &p);
+			slist_insertbeginning(siirrot, &p);
 		}
 	}
 
 	tulosta_areena(areena);
-	slist_print(sl);
+	slist_print(siirrot);
+	slist_clear(siirrot);
 
 	free_areena(areena);
 
