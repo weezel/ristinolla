@@ -6,19 +6,26 @@
 #include <string.h>
 #include <unistd.h>
 
+#if defined __linux__
+#include <rpc/types.h>		/* u_char define */
+#include <bsd/getopt.h>
+#include <bsd/stdlib.h>
+#include <bsd/unistd.h>
+#endif /* End of Linux part */
+
 #include "slist.h"
 
 #define	SIVU 10
 #define M1 'X'
-#define M2 'O' /* iso o, jos nyt unohdat */
+#define M2 'O' /* iso o, jos unohdat */
 
 
-int laillinen_siirto(char **, struct point *);
-struct point satunnainen_paikka(char **, char);
-void tulosta_areena(char **);
-char **luo_areena(void);
-void free_areena(char **);
-__dead void usage(void);
+int	  laillinen_siirto(char **, struct point *);
+struct	  point satunnainen_paikka(char **, char);
+void	  tulosta_areena(char **);
+char	**luo_areena(void);
+void	  free_areena(char **);
+void	  usage(void);
 
 
 int

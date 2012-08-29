@@ -1,7 +1,7 @@
 CC = clang
-CFLAGS = -g -ansi -pedantic -Wall
+CFLAGS = -g -ansi -pedantic -Wall #-Wextra
+LDFLAGS :=
 OS = $(shell uname -s)
-LDFLAGS =
 
 # OS related switches
 ifeq ($(OS), Linux)
@@ -9,11 +9,11 @@ ifeq ($(OS), Linux)
 endif
 
 
-default: all
+.PHONY: all clean
 
 all: slist
-	$(CC) $(LDFLAGS) $(CFLAGS) -o ristinolla ristinolla.c slist.o
+	$(CC) $(CFLAGS) ${INCLUDES} slist.o ristinolla.c -o ristinolla $(LDFLAGS)
 slist:
-	$(CC) $(LDFLAGS) $(CFLAGS) -c -o slist.o slist.c
+	$(CC) $(CFLAGS) -c -o slist.o slist.c
 clean:
 	rm -f *.o *.core ristinolla slist

@@ -5,6 +5,10 @@
 
 #include "slist.h"
 
+static size_t slist_size;
+static struct slist *slist_head;
+
+
 /* return 1 if empty, else 0 */
 int
 slist_isempty(struct slist *sl)
@@ -97,9 +101,9 @@ slist_print()
 void
 _slist_test(void)
 {
-	struct slist	*sl;
-	struct point	*p;
-	struct point	*p2;
+	struct slist	*sl = NULL;
+	struct point	*p  = NULL;
+	struct point	*p2 = NULL;
 
 	if ((p = malloc(sizeof(struct point))) == NULL)
 		err(1, "död");

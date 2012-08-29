@@ -12,9 +12,6 @@ struct slist {
 	struct slist *next;
 };
 
-static size_t slist_size;
-static struct slist *slist_head;
-
 int slist_isempty(struct slist *);
 struct slist *slist_initialize_node(struct point *);
 void slist_clear(struct slist *);
