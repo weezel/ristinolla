@@ -1,27 +1,97 @@
-#include <stdio.h>
 #include <ncurses.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "kayttoliittyma.h"
 
 int
-main(int argc, const char *argv[])
+main(void)
 {
 	int ch = 0;
+	struct point cursor;
+
+	memset(&cursor, 0, sizeof(struct point));
 
 	initscr();
-	raw();
+	cbreak();
 	keypad(stdscr, TRUE);
 	noecho();
 	alusta_varit();
 
 	piirra_kentta();
 
-	curs_set(0);
-	while (ch != 'q') {
-		ch = getch();
+	curs_set(2);
+	cursor.x = IKK_LEVEYS / 2;
+	cursor.y = IKK_KORKEUS / 2;
+	move(cursor.y, cursor.x);
+	while ((ch = getch()) != 'q') {
+		int	c = 0;
 
+		switch (ch) {
+		case 'k':
+		case KEY_UP:
+			if (laillinen_siirto(cursor.x, cursor.y - 1) < 0)
+				continue;
+			cursor.y--;
+			attrset(COLOR_PAIR(7));
+			move(cursor.y, cursor.x);
+			break;
+		case 'l':
+		case KEY_RIGHT:
+			if (laillinen_siirto(cursor.x + 1, cursor.y) < 0)
+				continue;
+			cursor.x++;
+			attrset(COLOR_PAIR(7));
+			move(cursor.y, cursor.x);
+			break;
+		case 'j':
+		case KEY_DOWN:
+			if (laillinen_siirto(cursor.x, cursor.y + 1) < 0)
+				continue;
+			cursor.y++;
+			attrset(COLOR_PAIR(7));
+			move(cursor.y, cursor.x);
+			break;
+		case 'h':
+		case KEY_LEFT:
+			if (laillinen_siirto(cursor.x - 1, cursor.y) < 0)
+				continue;
+			cursor.x--;
+			attrset(COLOR_PAIR(7));
+			move(cursor.y, cursor.x);
+			break;
+		case '1':
+			c = getch();
+			attrset(COLOR_PAIR(7));
+			addch('X');
+			move(cursor.y, cursor.x);
+			break;
+		case '2':
+			c = getch();
+			attrset(COLOR_PAIR(6));
+			addch(' ');
+			move(cursor.y, cursor.x);
+			break;
+		case TYHJA_MERKKI: /* XXX Space-näppäin, ei toimi vielä täysin
+				      (tarvitsee kaksi painallusta) */
+			c = getch();
+			if (c == TYHJA_MERKKI) {
+				attrset(COLOR_PAIR(7));
+				addch('X');
+			} /*else {
+				attrset(COLOR_PAIR(4));
+				addch(c);
+				move(cursor.y, cursor.x);
+			}*/
+			break;
+		}
+		move(0, 2);
+		attrset(COLOR_PAIR(6));
+		printw(" (Piste nyt: x:%d, y:%d | %c) ", cursor.x, cursor.y, c);
+		move(cursor.y, cursor.x);
 	}
 
+	clrtoeol();
 	endwin();
 
 	return 0;
@@ -42,6 +112,16 @@ alusta_varit(void)
 	}
 }
 
+int
+laillinen_siirto(const int x, const int y)
+{
+	if (x < 1 || x >= IKK_LEVEYS)
+		return -1;
+	if (y < 1 || y > IKK_KORKEUS)
+		return -1;
+	return 0;
+}
+
 void
 piirra_kentta(void)
 {
@@ -49,11 +129,26 @@ piirra_kentta(void)
 	int	y = 0;
 	char	c = 0;
 
-	for (y = 0; y < IKK_KORKEUS; y++) {
-		for (x = 0; x < IKK_LEVEYS; x++) {
+	attrset(COLOR_PAIR(6));
+	/* Reunukset, X-akseli */
+	for (x = 0; x < IKK_LEVEYS; x++) {
+		move(0, x);
+		addch('#');
+		move(IKK_KORKEUS + 1, x);
+		addch('#');
+	}
+	/* Reunukset, Y-akseli */
+	for (y = 0; y < IKK_KORKEUS + 2; y++) {
+		move(y, 0);
+		addch('#');
+		move(y, IKK_LEVEYS);
+		addch('#');
+	}
+	/* Kentän luonti */
+	for (y = 1; y < IKK_KORKEUS; y++) {
+		for (x = 1; x < IKK_LEVEYS; x++) {
 			move(y, x);
-			attrset(COLOR_PAIR(6));
-			addch('#');
+			addch(TYHJA_MERKKI);
 		}
 	}
 	refresh();
